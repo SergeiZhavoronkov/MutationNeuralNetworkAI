@@ -8,11 +8,11 @@ namespace MutationNeuralNetworkAI
     [DisallowMultipleComponent]
     public sealed class PathfinderTrainer : Trainer
     {
-        [SerializeField] private GameObject _botPrefab;
-
         private int _failedBots;
         private PathfinderNN[] _neuralNetworks;
         private PathfinderBot[] _bots;
+
+        [SerializeField] private GameObject _prefab;
 
         private void Start()
         {
@@ -60,7 +60,7 @@ namespace MutationNeuralNetworkAI
             for (int i = 0; i < Population; i++)
             {
                 _bots[i] = Instantiate(
-                    _botPrefab, Vector3.zero, Quaternion.identity).GetComponent<PathfinderBot>();
+                    _prefab, Vector3.zero, Quaternion.identity).GetComponent<PathfinderBot>();
                 _bots[i].Init(_neuralNetworks[i], this);
             }
         }

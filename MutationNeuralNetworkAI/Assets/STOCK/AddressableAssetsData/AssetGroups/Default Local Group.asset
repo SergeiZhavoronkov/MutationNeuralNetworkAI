@@ -18,7 +18,12 @@ MonoBehaviour:
   m_GUID: d6eb29687d043a6449127d55dcc1f0f7
   m_SerializeEntries:
   - m_GUID: 6d0b794cae9f54e4ba6c132415bc7146
-    m_Address: PathfinderBot
+    m_Address: Assets/STOCK/Content/Prefabs/pb_PathfinderBot.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 770124951da57064f9fd307514b788ae
+    m_Address: Assets/STOCK/Content/Prefabs/pb_WORLD.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

@@ -10,37 +10,26 @@ namespace MutationNeuralNetworkAI
         private const string _rewardTag = "Reward";
 
         private PathfinderNN _neuralNetwork;
-        private Trainer _trainer;
-        private Transform _transform;
-        private Vector3 _originPosition;
-        private RayCaster _roundRayCaster;
+        private RayCaster _rayCaster;
         private float[] _raycastResult;
         private float[][] _output;
 
+        private float _speed;
+        private float _rotationY;
 
         [Header("SETTINGS")]
         [SerializeField][Range(1f, 16f)] private float _raycastDistance;
         [SerializeField][Range(1f, 90f)] private float _rotationSpeed;
         [SerializeField][Range(1f, 5f)] private float _moveSpeed;
-        [SerializeField] private bool _showRaycast;
-
-        [Header("DEBUG")]
-        [SerializeField] private int _rayCount;
-
-        private float _speed;
-
-
-        private bool _isOperating = true;
-
+       
         public void Init(PathfinderNN neuralNetwork, Trainer trainer)
         {
             _neuralNetwork = neuralNetwork;
-            _trainer = trainer;
-            _transform = GetComponent<Transform>();
-            _originPosition = _transform.position;
-            _rayCount = _neuralNetwork.InputLength;
+            Trainer = trainer;
+            Transform = GetComponent<Transform>();
+            OriginPosition = Transform.position;
 
-            _roundRayCaster = new RayCaster(_transform,
+            _rayCaster = new RayCaster(Transform,
                 _raycastMaskName, _raycastDistance);
         }
 
@@ -57,40 +46,40 @@ namespace MutationNeuralNetworkAI
         public void ResetBot()
         {
             _neuralNetwork.ResetFitness();
-            _transform.SetPositionAndRotation(
-                _originPosition, Quaternion.identity);
+            Transform.SetPositionAndRotation(
+                OriginPosition, Quaternion.identity);
             
-            _isOperating = true;
+            IsOperating = true;
         }
 
         public void Operate()
         {
-            if (!_isOperating) return;
+            if (!IsOperating) return;
 
             var dt = Time.deltaTime;
 
-            _raycastResult = _roundRayCaster.GetSemiRoundRaycastResultAxisY(_showRaycast);
+            _raycastResult = _rayCaster.GetSemiRoundRaycastResultAxisY(ShowDebug);
 
             _neuralNetwork.SetInput(_raycastResult);
             _output = _neuralNetwork.GetOutput();
 
             _speed = _moveSpeed * _output[0][0];
-            var rotationY = _rotationSpeed * (_output[1][0] + _output[1][1]);
+            _rotationY = _rotationSpeed * (_output[1][0] + _output[1][1]);
 
-            _transform.SetPositionAndRotation(
-                _transform.position + dt * _speed * _transform.forward,
-                _transform.rotation *= Quaternion.Euler(0f, dt * rotationY, 0f));
+            Transform.SetPositionAndRotation(
+                Transform.position + dt * _speed * Transform.forward,
+                Transform.rotation *= Quaternion.Euler(0f, dt * _rotationY, 0f));
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!_isOperating) return;
+            if (!IsOperating) return;
 
             if (!other.CompareTag(_rewardTag))
             {
-                _isOperating = false;
+                IsOperating = false;
                 AddFitness(-0.5f);
-                _trainer.IntformAbotFailure();
+                Trainer.IntformAbotFailure();
             }
         }
     }
